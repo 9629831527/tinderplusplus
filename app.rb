@@ -97,6 +97,12 @@ get '/api/like/:id' do
   {result: 'ok'}.merge(result).to_json
 end
 
+get '/api/pass/:id' do
+  result = @pyro.dislike(params[:id])
+  puts result
+  {result: 'ok'}.merge(result).to_json
+end
+
 private
 
 def authenticateAndSetup
