@@ -91,15 +91,28 @@ get '/api/people' do
   users.to_json
 end
 
+get '/api/user/:id' do
+  result = @pyro.info_for_user(params[:id])
+  result.to_json
+end
+
 get '/api/like/:id' do
   result = @pyro.like(params[:id])
-  puts result
   {result: 'ok'}.merge(result).to_json
 end
 
 get '/api/pass/:id' do
   result = @pyro.dislike(params[:id])
-  puts result
+  {result: 'ok'}.merge(result).to_json
+end
+
+get '/api/location/:lat/:lng' do
+  result = @pyro.update_location(params[:lat], params[:lng])
+  {result: 'ok'}.merge(result).to_json
+end
+
+post '/api/message/:id' do
+  result = @pyro.send_message(params[:id], params[:msg])
   {result: 'ok'}.merge(result).to_json
 end
 
