@@ -1,9 +1,44 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Tinder++</title>
-    <script src="/bundle.js"></script>
+  <meta charset="UTF-8">
+  <title>Tinder++</title>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/restangular/1.4.0/restangular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
+  <script src="/swing.min.js"></script>
+  <script src="/app.js"></script>
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"/>
+  <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/app.css"/>
 </head>
-<body>
-    tinderjs sup sup
+<body ng-app="tinder++">
+  <div class="container" ng-controller="TinderController">
+    <h1 style="margin-bottom: 0;">{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}</h1>
+    <h3 style="margin: 0;">{{allPeople[peopleIndex].distance_mi}} miles away</h3>
+    <p>{{allPeople[peopleIndex].bio || 'No Bio'}}</p>
+    <div class="main-photo-container">
+      <div class="main-photo tinder-card" ng-repeat="user in allPeople.slice().reverse()" render-images-directive style="background-image: url({{user.photos[0].url}});">
+        <div class="pass-overlay">
+          <i class="fa fa-thumbs-o-down"></i>
+        </div>
+        <div class="like-overlay">
+          <i class="fa fa-thumbs-o-up"></i>
+        </div>
+      </div>
+    </div>
+    <div class="small-photos">
+      <div ng-repeat="photo in allPeople[peopleIndex].photos" ng-hide="$first">
+        <img src="{{photo.processedFiles[2].url}}" />
+      </div>
+    </div>
+  </div>
 </body>
 </html>

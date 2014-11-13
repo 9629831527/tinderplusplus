@@ -1,0 +1,75 @@
+* {
+    font-family: 'Merriweather', serif;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Raleway', sans-serif;
+}
+
+.container {
+    width: 800px;
+    margin: 0 auto;
+    /*border: 1px solid black;*/
+    text-align: center;
+}
+
+.main-photo-container {
+    height: 410px;
+    position: relative;
+}
+
+.main-photo {
+    text-align: center;
+    width: 400px;
+    height: 400px;
+    display: inline-block;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: absolute;
+    background-size: contain;
+    left: 50%;
+    margin-left: -200px;
+}
+
+.main-photo .pass-overlay {
+    color: white;
+    position: relative;
+    top: 0;
+    background: #FF2400;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    font-size: 10em;
+    line-height: 250%;
+}
+
+.main-photo .like-overlay {
+    color: white;
+    position: relative;
+    top: -100%;
+    background: #2CA624;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    font-size: 10em;
+    line-height: 250%;
+}
+
+.main-photo-container img {
+    max-width: 400px;
+}
+
+.small-photos div {
+    display: inline-block;
+    padding-right: 5px;
+}
+
+.small-photos img {
+    max-width: 150px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}

@@ -16,12 +16,12 @@ before '/api/*' do
 end
 
 get '/' do
-  if session[:tinder_token]
-    session[:tinder_token]
-  else
-    'you need to <a href="/login">login</a>.'
-  end
-  # erb :index
+  # if session[:tinder_token]
+  #   session[:tinder_token]
+  # else
+  #   'you need to <a href="/login">login</a>.'
+  # end
+  erb :index
 end
 
 get '/login' do
