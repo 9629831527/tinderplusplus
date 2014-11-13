@@ -19,7 +19,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
   });
 
   var initCards = function() {
-    cards = [].slice.call($('.tinder-card'));
+    var cards = [].slice.call($('.tinder-card'));
 
     var config = {
       throwOutConfidence: function (offset, element) {
@@ -42,17 +42,21 @@ app.controller('TinderController', function TinderController($scope, Restangular
       $('.pass-overlay, .like-overlay').css('opacity', 0);
     });
 
-    stack.on('dragstart', function(e) {
-      $passOverlay = $(e.target).children('.pass-overlay');
-      $likeOverlay = $(e.target).children('.like-overlay');
-    });
-
     stack.on('dragmove', function (e) {
+      if (!$passOverlay || !$likeOverlay) {
+        $passOverlay = $(e.target).children('.pass-overlay');
+        $likeOverlay = $(e.target).children('.like-overlay');
+      }
       if (e.throwDirection < 0) { // left
         pass(e.throwOutConfidence);
       } else { // right
         like(e.throwOutConfidence);
       }
+    });
+
+    stack.on('dragend', function(e) {
+      $passOverlay = null;
+      $likeOverlay = null;
     });
 
     Mousetrap.bind('left', function () {
