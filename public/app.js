@@ -1,4 +1,4 @@
-var app = angular.module('tinder++', ['restangular']);
+var app = angular.module('tinder++', ['restangular', 'ngAutocomplete']);
 
 app.config(function (RestangularProvider) {
 //    RestangularProvider.setBaseUrl('/api');
@@ -7,7 +7,18 @@ app.config(function (RestangularProvider) {
   });
 });
 
-app.controller('TinderController', function TinderController($scope, Restangular) {
+app.controller('TinderController', function TinderController($scope, Restangular, $http) {
+  $scope.autocompleteOptions = {
+    types: '(cities)'
+  };
+
+  $scope.watchAutocomplete = function () { return $scope.details; };
+  $scope.$watch($scope.watchAutocomplete, function (details) {
+    if (details) {
+      updateLocation(details.geometry.location.k, details.geometry.location.B);
+    }
+  }, true);
+
   $scope.peopleIndex = 0;
   var newPeople = Restangular.all('people.json');
   newPeople.getList().then(function (data) {
@@ -17,6 +28,17 @@ app.controller('TinderController', function TinderController($scope, Restangular
   $scope.$on('cardsRendered', function() {
     initCards();
   });
+
+  var updateLocation = function(lat, lng) {
+//    $http.get('/api/location/' + lat + '/' + lng)
+//        .success(function(data, status, headers, config) {
+//          alert('updated location');
+//        })
+//        .error(function(data, status, headers, config) {
+//          alert(data);
+//        });
+    alert('updated location!');
+  };
 
   var initCards = function() {
     var cards = [].slice.call($('.tinder-card'));
@@ -76,6 +98,14 @@ app.controller('TinderController', function TinderController($scope, Restangular
       $likeOverlay = $(cardEl).children('.like-overlay');
       like(1);
     });
+
+    // randomize rotation
+    window.setTimeout(function() {
+      $.each(cards, function(idx, card) {
+        $(card).css('margin-left', '-' + (Math.floor(Math.random()*(210-190+1)+190)) + 'px')
+            .css('transform', 'rotate(' + (Math.floor(Math.random()*(3+3+1)-3)) + 'deg)');
+      });
+    }, 10);
   };
 
 });
