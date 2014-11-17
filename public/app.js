@@ -137,8 +137,8 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
         });
     },
     people: function() {
-      //$http.get('/api/people')
-      $http.get('people.json')
+      $http.get('/api/people')
+      //$http.get('people.json')
           .success(function(data) {
             $scope.peopleIndex = 0;
             $scope.allPeople = data.results;
