@@ -50,6 +50,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
 
   var initCards = function() {
     $scope.cards = [].slice.call($('.tinder-card'));
+    var $faderEls;
 
     var config = {
       throwOutConfidence: function (offset, element) {
@@ -72,12 +73,27 @@ app.controller('TinderController', function TinderController($scope, Restangular
       $('.pass-overlay, .like-overlay').css('opacity', 0);
     });
 
+    var fadeDebounce = _.debounce(function(opacity) {
+      if ($faderEls)
+        $faderEls.css('opacity', opacity);
+    }, 15);
+
     stack.on('dragmove', function (obj) {
       obj.origEvent.srcEvent.preventDefault();
       if (!$passOverlay || !$likeOverlay) {
         $passOverlay = $(obj.target).children('.pass-overlay');
         $likeOverlay = $(obj.target).children('.like-overlay');
       }
+      if (!$faderEls) {
+        $faderEls = $('.fader');
+      }
+
+      var opacity = (1 - obj.throwOutConfidence).toFixed(2);
+      if ($faderEls && (parseFloat($faderEls.first().css('opacity')).toFixed(2) != opacity)) {
+        //$faderEls.fadeTo(0, opacity);
+        fadeDebounce(opacity);
+      }
+
       if (obj.throwDirection < 0) { // left
         pass(obj.throwOutConfidence);
       } else { // right
@@ -86,8 +102,11 @@ app.controller('TinderController', function TinderController($scope, Restangular
     });
 
     stack.on('dragend', function(e) {
-      $passOverlay = null;
-      $likeOverlay = null;
+      $passOverlay = $likeOverlay = null;
+      if ($faderEls) {
+        $faderEls.css('opacity', 1);
+        $faderEls = null;
+      }
     });
 
     Mousetrap.bind('left', function () {
@@ -150,7 +169,3 @@ function applyOpacity(applyEl, clearEl, confidence) {
   clearEl.css('opacity', 0);
 }
 
-function resetOpacity() {
-  $passOverlay.css('opacity', 0);
-  $likeOverlay.css('opacity', 0);
-}
