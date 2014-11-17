@@ -7,20 +7,32 @@ app.config(function (RestangularProvider) {
   });
 });
 
-app.controller('TinderController', function TinderController($scope, Restangular, $http, $timeout) {
+app.controller('TinderController', function TinderController($scope, Restangular, $http, $timeout, $window) {
   $scope.allPeople = [];
   $scope.autocompleteOptions = {
     types: '(cities)'
+  };
+
+  $scope.showLocation = false;
+  $scope.toggleShowLocation = function() {
+    $scope.showLocation = !$scope.showLocation;
   };
 
   $scope.swapPhoto = function(index) {
     $scope.allPeople[$scope.peopleIndex].photoIndex = index;
   };
 
+  $scope.getCookie = function(cookieName) {
+    return docCookies.getItem(cookieName);
+  };
+
   $scope.watchAutocomplete = function () { return $scope.details; };
   $scope.$watch($scope.watchAutocomplete, function (details) {
     if (details) {
-      updateLocation(details.geometry.location.k, details.geometry.location.B);
+      docCookies.setItem('currentCity', details.name);
+      API.updateLocation(details.geometry.location.k, details.geometry.location.B);
+      $scope.showLocation = false;
+      $('#autocompleteLocation').val('');
     }
   }, true);
 
@@ -36,17 +48,6 @@ app.controller('TinderController', function TinderController($scope, Restangular
   $scope.$on('cardsRendered', function() {
     initCards();
   });
-
-  var updateLocation = function(lat, lng) {
-//    $http.get('/api/location/' + lat + '/' + lng)
-//        .success(function(data, status, headers, config) {
-//          alert('updated location');
-//        })
-//        .error(function(data, status, headers, config) {
-//          alert(data);
-//        });
-    alert('updated location!');
-  };
 
   var initCards = function() {
     $scope.cards = [].slice.call($('.tinder-card'));
@@ -104,7 +105,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
     stack.on('dragend', function(e) {
       $passOverlay = $likeOverlay = null;
       if ($faderEls) {
-        $faderEls.css('opacity', 1);
+        $faderEls.fadeTo(600, 1);
         $faderEls = null;
       }
     });
@@ -138,6 +139,42 @@ app.controller('TinderController', function TinderController($scope, Restangular
     }, 0, false);
   };
 
+  var API = {
+    login: function(username, password) {
+      $http.post('/login')
+          .success(function(data) {
+            docCookies.setItem('name', data.user.full_name);
+            docCookies.setItem('smallPhoto', data.users.photos[0].processedFiles[3].url);
+            $window.location.reload();
+          })
+          .error(function(data) {
+            alert(data);
+          });
+    },
+    updateLocation: function(lat, lng) {
+//    $http.get('/api/location/' + lat + '/' + lng)
+//        .success(function(data, status, headers, config) {
+//          alert('updated location');
+//        })
+//        .error(function(data, status, headers, config) {
+//          alert(data);
+//        });
+    },
+    getPeople: function() {
+      $http.get('/api/people')
+          .success(function(data) {
+            $scope.peopleIndex = 0;
+            $scope.allPeople = data;
+            $.map($scope.allPeople, function(person) {
+              person.photoIndex = 0;
+            });
+          })
+          .error(function(data) {
+            alert(data);
+          })
+    }
+  };
+
 });
 
 app.directive('renderImagesDirective', function() {
@@ -169,3 +206,67 @@ function applyOpacity(applyEl, clearEl, confidence) {
   clearEl.css('opacity', 0);
 }
 
+// helpers
+
+/*\
+|*|
+|*|  :: cookies.js ::
+|*|
+|*|  A complete cookies reader/writer framework with full unicode support.
+|*|
+|*|  Revision #1 - September 4, 2014
+|*|
+|*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+|*|  https://developer.mozilla.org/User:fusionchess
+|*|
+|*|  This framework is released under the GNU Public License, version 3 or later.
+|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
+|*|
+|*|  Syntaxes:
+|*|
+|*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+|*|  * docCookies.getItem(name)
+|*|  * docCookies.removeItem(name[, path[, domain]])
+|*|  * docCookies.hasItem(name)
+|*|  * docCookies.keys()
+|*|
+\*/
+var docCookies = {
+  getItem: function (sKey) {
+    if (!sKey) { return null; }
+    return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+  },
+  setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+    var sExpires = "";
+    if (vEnd) {
+      switch (vEnd.constructor) {
+        case Number:
+          sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+          break;
+        case String:
+          sExpires = "; expires=" + vEnd;
+          break;
+        case Date:
+          sExpires = "; expires=" + vEnd.toUTCString();
+          break;
+      }
+    }
+    document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+    return true;
+  },
+  removeItem: function (sKey, sPath, sDomain) {
+    if (!this.hasItem(sKey)) { return false; }
+    document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+    return true;
+  },
+  hasItem: function (sKey) {
+    if (!sKey) { return false; }
+    return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+  },
+  keys: function () {
+    var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+    return aKeys;
+  }
+};
