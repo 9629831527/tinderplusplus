@@ -8,6 +8,7 @@ require 'pyro'
 
 set :server, 'webrick'
 enable :sessions
+set :session_secret, '71384ef55b7b79cb7a8cfcc7921ffd5fd525c850d8648a10ba61250162cfc4fb14e22081c77499b31c2eca84cf7d922974bf1ad5dd91a487de461a6d2aa18744'
 
 FB_LOGIN_URL = 'https://www.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token'
 
@@ -24,8 +25,9 @@ get '/' do
   erb :index
 end
 
-get '/login' do
+post '/login' do
   begin
+    result = {}
     a = Mechanize.new
     a.get(FB_LOGIN_URL) do |page|
 
@@ -47,15 +49,10 @@ get '/login' do
           redir_page = a.submit(form, btn)
 
           form = redir_page.form_with(:class => /checkpoint/)
-          if form
+          while form do
             btn = form.button_with(:id => 'checkpointSubmitButton')
             redir_page = a.submit(form, btn)
-          end
-
-          form = redir_page.form_with(:class => /checkpoint/)
-          if form
-            btn = form.button_with(:id => 'checkpointSubmitButton')
-            redir_page = a.submit(form, btn)
+            form = redir_page.form_with(:class => /checkpoint/)
           end
         end
       end
@@ -64,18 +61,17 @@ get '/login' do
       content = open('https://graph.facebook.com/me?access_token=' + token).read
       fb_id = JSON.parse(content)['id']
 
-      pyro = TinderPyro::Client.new
-      pyro.sign_in(fb_id, token)
+      @pyro = TinderPyro::Client.new
+      result = @pyro.sign_in(fb_id, token)
 
       session[:fb_token] = token
       session[:fb_id] = fb_id
-      session[:tinder_token] = pyro.auth_token
+      session[:tinder_token] = @pyro.auth_token
     end
-    'logged in'
-    # redirect to('/')
+    {result: 'ok'}.merge(result).to_json
   rescue OpenURI::HTTPError => ex
     puts ex
-    'failed'
+    ex.to_json
   end
 end
 
