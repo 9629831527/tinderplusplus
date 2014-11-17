@@ -48,7 +48,7 @@
       </div>
       <div class="small-photos fader">
         <div ng-repeat="photo in allPeople[peopleIndex].photos">
-          <img src="{{photo.processedFiles[2].url}}" ng-click="swapPhoto($index)" data-photo-index="{{$index}}"
+          <img ng-src="{{photo.processedFiles[2].url}}" ng-click="swapPhoto($index)" data-photo-index="{{$index}}"
                ng-class="{'selected': $index === allPeople[peopleIndex].photoIndex}" />
         </div>
       </div>
