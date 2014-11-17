@@ -1,21 +1,12 @@
-var app = angular.module('tinder++', ['restangular', 'ngAutocomplete']);
+var app = angular.module('tinder++', ['ngAutocomplete']);
 
-app.config(function (RestangularProvider) {
-//    RestangularProvider.setBaseUrl('/api');
-  RestangularProvider.addResponseInterceptor(function (data, operation, what, url, response, deferred) {
-    return data.results;
-  });
-});
-
-app.controller('TinderController', function TinderController($scope, Restangular, $http, $timeout, $window) {
+app.controller('TinderController', function TinderController($scope, $http, $timeout, $window) {
   $scope.allPeople = [];
+  $scope.peopleIndex = 0;
+  $scope.showLocation = false;
+
   $scope.autocompleteOptions = {
     types: '(cities)'
-  };
-
-  $scope.showLocation = false;
-  $scope.toggleShowLocation = function() {
-    $scope.showLocation = !$scope.showLocation;
   };
 
   $scope.swapPhoto = function(index) {
@@ -35,15 +26,6 @@ app.controller('TinderController', function TinderController($scope, Restangular
       $('#autocompleteLocation').val('');
     }
   }, true);
-
-  $scope.peopleIndex = 0;
-  var newPeople = Restangular.all('people.json');
-  newPeople.getList().then(function (data) {
-    $scope.allPeople = data;
-    $.map($scope.allPeople, function(person) {
-      person.photoIndex = 0;
-    });
-  });
 
   $scope.$on('cardsRendered', function() {
     initCards();
@@ -67,17 +49,20 @@ app.controller('TinderController', function TinderController($scope, Restangular
     stack.on('throwout', function (e) {
       $scope.peopleIndex++;
       $scope.$apply();
-      $(e.target).fadeOut(750);
+      $(e.target).fadeOut(500);
+      if ($scope.peopleIndex >= $scope.allPeople.length) {
+        API.people();
+      }
     });
 
     stack.on('throwin', function (e) {
       $('.pass-overlay, .like-overlay').css('opacity', 0);
     });
 
-    var fadeDebounce = _.debounce(function(opacity) {
+    var fadeDebounce = debounce(function(opacity) {
       if ($faderEls)
         $faderEls.css('opacity', opacity);
-    }, 15);
+    }, 10);
 
     stack.on('dragmove', function (obj) {
       obj.origEvent.srcEvent.preventDefault();
@@ -91,7 +76,6 @@ app.controller('TinderController', function TinderController($scope, Restangular
 
       var opacity = (1 - obj.throwOutConfidence).toFixed(2);
       if ($faderEls && (parseFloat($faderEls.first().css('opacity')).toFixed(2) != opacity)) {
-        //$faderEls.fadeTo(0, opacity);
         fadeDebounce(opacity);
       }
 
@@ -160,20 +144,57 @@ app.controller('TinderController', function TinderController($scope, Restangular
 //          alert(data);
 //        });
     },
-    getPeople: function() {
-      $http.get('/api/people')
+    people: function() {
+      //$http.get('/api/people')
+      $http.get('people.json')
           .success(function(data) {
             $scope.peopleIndex = 0;
-            $scope.allPeople = data;
-            $.map($scope.allPeople, function(person) {
-              person.photoIndex = 0;
-            });
+            $scope.allPeople = data.results;
+            $.map($scope.allPeople, function(person) { person.photoIndex = 0; });
           })
           .error(function(data) {
-            alert(data);
+            console.log(data);
           })
+    },
+    userInfo: function(userId) {
+      $http.get('/api/user/' + userId)
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    like: function(userId) {
+      $http.get('/api/like/' + userId)
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    pass: function(userId) {
+      $http.get('/api/pass/' + userId)
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    message: function(userId, message) {
+      $http.post('/api/message/' + userId, {msg: message})
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
     }
   };
+
+  API.people();
 
 });
 
@@ -207,6 +228,21 @@ function applyOpacity(applyEl, clearEl, confidence) {
 }
 
 // helpers
+
+var debounce = function(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
 
 /*\
 |*|

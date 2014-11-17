@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>Tinder++</title>
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/restangular/1.4.0/restangular.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
   <script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
@@ -27,9 +25,7 @@
     <div class="right">
       <p>
         {{getCookie('name')}}
-        <span ng-if="getCookie('currentCity')">
-          <a href="" ng-click="toggleShowLocation()" >({{getCookie('currentCity')}})</a>
-        </span>
+        <a href="" ng-click="showLocation = !showLocation" >({{getCookie('currentCity') ? getCookie('currentCity') : 'set location'}})</a>
         <br>
         <a href="/logout">Logout</a>
       </p>
@@ -45,8 +41,8 @@
     <div class="button"></div>
   </div>
   <div class="container">
-    <div ng-show="allPeople.length === 0">Loading...</div>
-    <div ng-show="allPeople.length > 0">
+    <div ng-show="allPeople.length === 0 || peopleIndex >= allPeople.length">Loading...</div>
+    <div ng-show="allPeople.length > 0 && peopleIndex < allPeople.length">
       <h1 class="fader">{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}</h1>
       <h3 class="fader">{{allPeople[peopleIndex].distance_mi}} miles {{getCookie('currentCity') ? "from " + getCookie('currentCity') : 'away'}}</h3>
 
