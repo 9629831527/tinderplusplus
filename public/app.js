@@ -8,6 +8,7 @@ app.config(function (RestangularProvider) {
 });
 
 app.controller('TinderController', function TinderController($scope, Restangular, $http, $timeout) {
+  $scope.allPeople = [];
   $scope.autocompleteOptions = {
     types: '(cities)'
   };
@@ -27,11 +28,9 @@ app.controller('TinderController', function TinderController($scope, Restangular
   var newPeople = Restangular.all('people.json');
   newPeople.getList().then(function (data) {
     $scope.allPeople = data;
-
-    for (var i=0; i < $scope.allPeople.length; i++) {
-      $scope.allPeople[i].photoIndex = 0;
-    }
-    console.log($scope.allPeople);
+    $.map($scope.allPeople, function(person) {
+      person.photoIndex = 0;
+    });
   });
 
   $scope.$on('cardsRendered', function() {
@@ -73,15 +72,16 @@ app.controller('TinderController', function TinderController($scope, Restangular
       $('.pass-overlay, .like-overlay').css('opacity', 0);
     });
 
-    stack.on('dragmove', function (e) {
+    stack.on('dragmove', function (obj) {
+      obj.origEvent.srcEvent.preventDefault();
       if (!$passOverlay || !$likeOverlay) {
-        $passOverlay = $(e.target).children('.pass-overlay');
-        $likeOverlay = $(e.target).children('.like-overlay');
+        $passOverlay = $(obj.target).children('.pass-overlay');
+        $likeOverlay = $(obj.target).children('.like-overlay');
       }
-      if (e.throwDirection < 0) { // left
-        pass(e.throwOutConfidence);
+      if (obj.throwDirection < 0) { // left
+        pass(obj.throwOutConfidence);
       } else { // right
-        like(e.throwOutConfidence);
+        like(obj.throwOutConfidence);
       }
     });
 
