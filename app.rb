@@ -7,7 +7,7 @@ require 'sinatra'
 require 'sinatra/cookies'
 require 'pyro'
 
-set :server, 'webrick'
+# set :server, 'webrick'
 enable :sessions
 set :session_secret, '71384ef55b7b79cb7a8cfcc7921ffd5fd525c850d8648a10ba61250162cfc4fb14e22081c77499b31c2eca84cf7d922974bf1ad5dd91a487de461a6d2aa18744'
 
