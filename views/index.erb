@@ -22,15 +22,19 @@
   <link rel="stylesheet" href="/app.css"/>
 </head>
 <body ng-app="tinder++">
+  <div class="top-button">
+    <div class="button"></div>
+  </div>
   <div class="container" ng-controller="TinderController">
-    <h1 style="margin-bottom: 0;">{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}</h1>
-    <h3 style="margin: 0;">{{allPeople[peopleIndex].distance_mi}} miles away</h3>
+    <h1>{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}</h1>
+    <h3>{{allPeople[peopleIndex].distance_mi}} miles away</h3>
     <p>
       <input type="text" ng-autocomplete ng-model="autocomplete" options="autocompleteOptions" details="details" />
     </p>
     <p>{{allPeople[peopleIndex].bio || 'No Bio'}}</p>
     <div class="main-photo-container">
-      <div class="main-photo tinder-card" ng-repeat="user in allPeople.slice().reverse()" render-images-directive style="background-image: url({{user.photos[0].url}});">
+      <div class="main-photo tinder-card" ng-repeat="user in allPeople.slice().reverse()" render-images-directive
+           style="background-image: url({{user.photos[user.photoIndex].url}});">
         <div class="pass-overlay">
           <i class="fa fa-thumbs-o-down"></i>
         </div>
@@ -40,8 +44,9 @@
       </div>
     </div>
     <div class="small-photos">
-      <div ng-repeat="photo in allPeople[peopleIndex].photos" ng-hide="$first">
-        <img src="{{photo.processedFiles[2].url}}" />
+      <div ng-repeat="photo in allPeople[peopleIndex].photos" >
+        <img src="{{photo.processedFiles[2].url}}" ng-click="swapPhoto($index)" data-photo-index="{{$index}}"
+             ng-class="{'selected': $index === allPeople[peopleIndex].photoIndex}" />
       </div>
     </div>
   </div>

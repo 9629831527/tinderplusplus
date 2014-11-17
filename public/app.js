@@ -7,9 +7,13 @@ app.config(function (RestangularProvider) {
   });
 });
 
-app.controller('TinderController', function TinderController($scope, Restangular, $http) {
+app.controller('TinderController', function TinderController($scope, Restangular, $http, $timeout) {
   $scope.autocompleteOptions = {
     types: '(cities)'
+  };
+
+  $scope.swapPhoto = function(index) {
+    $scope.allPeople[$scope.peopleIndex].photoIndex = index;
   };
 
   $scope.watchAutocomplete = function () { return $scope.details; };
@@ -23,6 +27,11 @@ app.controller('TinderController', function TinderController($scope, Restangular
   var newPeople = Restangular.all('people.json');
   newPeople.getList().then(function (data) {
     $scope.allPeople = data;
+
+    for (var i=0; i < $scope.allPeople.length; i++) {
+      $scope.allPeople[i].photoIndex = 0;
+    }
+    console.log($scope.allPeople);
   });
 
   $scope.$on('cardsRendered', function() {
@@ -41,7 +50,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
   };
 
   var initCards = function() {
-    var cards = [].slice.call($('.tinder-card'));
+    $scope.cards = [].slice.call($('.tinder-card'));
 
     var config = {
       throwOutConfidence: function (offset, element) {
@@ -50,7 +59,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
     };
     window.stack = gajus.Swing.Stack(config);
 
-    cards.forEach(function (targetElement) {
+    $scope.cards.forEach(function (targetElement) {
       stack.createCard(targetElement);
     });
 
@@ -82,7 +91,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
     });
 
     Mousetrap.bind('left', function () {
-      var cardEl = cards[cards.length - $scope.peopleIndex - 1];
+      var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
       var card = stack.getCard(cardEl);
       card.throwOut(-100, -50);
       $passOverlay = $(cardEl).children('.pass-overlay');
@@ -91,7 +100,7 @@ app.controller('TinderController', function TinderController($scope, Restangular
     });
 
     Mousetrap.bind('right', function () {
-      var cardEl = cards[cards.length - $scope.peopleIndex - 1];
+      var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
       var card = stack.getCard(cardEl);
       card.throwOut(100, -50);
       $passOverlay = $(cardEl).children('.pass-overlay');
@@ -100,12 +109,14 @@ app.controller('TinderController', function TinderController($scope, Restangular
     });
 
     // randomize rotation
-    window.setTimeout(function() {
-      $.each(cards, function(idx, card) {
-        $(card).css('margin-left', '-' + (Math.floor(Math.random()*(210-190+1)+190)) + 'px')
+    $timeout(function() {
+      $.each($scope.cards, function(idx, card) {
+        var $card = $(card);
+        var marginLeft = parseInt($card.css('margin-left'));
+        $card.css('margin-left', '-' + (Math.floor(Math.random()*((marginLeft+10)-(marginLeft-10)+1)+(marginLeft-10))) + 'px')
             .css('transform', 'rotate(' + (Math.floor(Math.random()*(3+3+1)-3)) + 'deg)');
       });
-    }, 10);
+    }, 0, false);
   };
 
 });
