@@ -124,25 +124,25 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
   };
 
   var API = {
-    login: function(username, password) {
-      $http.post('/login')
-          .success(function(data) {
-            docCookies.setItem('name', data.user.full_name);
-            docCookies.setItem('smallPhoto', data.users.photos[0].processedFiles[3].url);
-            $window.location.reload();
-          })
-          .error(function(data) {
-            alert(data);
-          });
-    },
+    //login: function(username, password) {
+    //  $http.post('/login')
+    //      .success(function(data) {
+    //        //docCookies.setItem('name', data.user.full_name);
+    //        //docCookies.setItem('smallPhoto', data.users.photos[0].processedFiles[3].url);
+    //        $window.location.reload();
+    //      })
+    //      .error(function(data) {
+    //        alert(data);
+    //      });
+    //},
     updateLocation: function(lat, lng) {
-//    $http.get('/api/location/' + lat + '/' + lng)
-//        .success(function(data, status, headers, config) {
-//          alert('updated location');
-//        })
-//        .error(function(data, status, headers, config) {
-//          alert(data);
-//        });
+    $http.get('/api/location/' + lat + '/' + lng)
+        .success(function(data, status, headers, config) {
+          console.log(data);
+        })
+        .error(function(data, status, headers, config) {
+          alert(data);
+        });
     },
     people: function() {
       //$http.get('/api/people')
@@ -196,6 +196,12 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
 
   API.people();
 
+});
+
+app.controller('LoginController', function LoginController($scope, $http) {
+  $scope.hasValidToken = function() {
+    return docCookies.hasItem('logged_in');
+  };
 });
 
 app.directive('renderImagesDirective', function() {

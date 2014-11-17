@@ -4,6 +4,7 @@ require 'cgi'
 require 'open-uri'
 require 'json'
 require 'sinatra'
+require 'sinatra/cookies'
 require 'pyro'
 
 set :server, 'webrick'
@@ -33,7 +34,7 @@ post '/login' do
 
       # Submit the login form
       redir_page = page.form_with(:action => /login.php/) do |f|
-        f.email  = params[:username]
+        f.email  = params[:email]
         f.pass   = params[:password]
       end.click_button
 
@@ -67,8 +68,12 @@ post '/login' do
       session[:fb_token] = token
       session[:fb_id] = fb_id
       session[:tinder_token] = @pyro.auth_token
+      response.set_cookie('logged_in', {:value => true})
+      response.set_cookie('name', {:value => result['user']['full_name']})
+      response.set_cookie('smallPhoto', {:value => result['user']['photos'][0]['processedFiles'][3]['url']})
     end
-    {result: 'ok'}.merge(result).to_json
+    # {result: 'ok'}.merge(result).to_json
+      redirect to('/')
   rescue OpenURI::HTTPError => ex
     puts ex
     ex.to_json
@@ -76,7 +81,8 @@ post '/login' do
 end
 
 get '/logout' do
-  session[:tinder_token] = nil
+  session.clear
+  cookies.map{|cookie| response.delete_cookie(cookie[0]) }
   redirect to('/')
 end
 
