@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/mfkp/tinder_pyro.git
-  revision: e23a6112599ac4910d90b16f4702dac46e49ada2
+  revision: f64d7d0dff265fca0855cfffd022490e77368b2e
   specs:
     tinder_pyro (0.0.1)
       httparty (~> 0.3)
