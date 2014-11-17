@@ -47,6 +47,9 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
     });
 
     stack.on('throwout', function (e) {
+      var userId = $scope.allPeople[$scope.peopleIndex]._id;
+      // TODO: add to queue instead of liking/passing immediately
+      (e.throwDirection < 0) ? API.pass(userId) : API.like(userId);
       $scope.peopleIndex++;
       $scope.$apply();
       $(e.target).fadeOut(500);
@@ -124,17 +127,6 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
   };
 
   var API = {
-    //login: function(username, password) {
-    //  $http.post('/login')
-    //      .success(function(data) {
-    //        //docCookies.setItem('name', data.user.full_name);
-    //        //docCookies.setItem('smallPhoto', data.users.photos[0].processedFiles[3].url);
-    //        $window.location.reload();
-    //      })
-    //      .error(function(data) {
-    //        alert(data);
-    //      });
-    //},
     updateLocation: function(lat, lng) {
     $http.get('/api/location/' + lat + '/' + lng)
         .success(function(data, status, headers, config) {
@@ -169,6 +161,9 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
       $http.get('/api/like/' + userId)
           .success(function(data) {
             console.log(data);
+            if (data.match) {
+              alert("it's a match!");
+            }
           })
           .error(function(data) {
             console.log(data);
