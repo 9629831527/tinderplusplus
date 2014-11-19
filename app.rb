@@ -4,11 +4,13 @@ require 'open-uri'
 require 'json'
 require 'sinatra'
 require 'sinatra/cookies'
+require 'sinatra/cross_origin'
 require 'pyro'
 
 set :server, 'puma'
 enable :sessions
 set :session_secret, '71384ef55b7b79cb7a8cfcc7921ffd5fd525c850d8648a10ba61250162cfc4fb14e22081c77499b31c2eca84cf7d922974bf1ad5dd91a487de461a6d2aa18744'
+enable :cross_origin
 
 before '/api/*' do
   authenticateAndSetup
@@ -19,7 +21,6 @@ get '/' do
 end
 
 post '/login' do
-  response['Access-Control-Allow-Origin'] = '*'
   @pyro = TinderPyro::Client.new
   result = @pyro.sign_in(params[:fb_id], params[:fb_token])
 
@@ -33,7 +34,6 @@ post '/login' do
 end
 
 get '/logout' do
-  response['Access-Control-Allow-Origin'] = '*'
   session.clear
   cookies.map{|cookie| response.delete_cookie(cookie[0]) }
   redirect to('/')
@@ -80,6 +80,4 @@ def authenticateAndSetup
   @pyro.auth_token = session[:tinder_token]
 
   content_type :json
-  # TODO: change me to whatever node-webkit is providing
-  response['Access-Control-Allow-Origin'] = '*'
 end
