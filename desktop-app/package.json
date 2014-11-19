@@ -1,0 +1,16 @@
+{
+  "name": "TinderPlusPlus",
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "resizable": true,
+    "fullscreen": false,
+    "width": 600,
+    "height": 800,
+    "position": "center",
+    "frame": false
+  },
+  "devDependencies": {
+    "moment": "^2.8.4"
+  }
+}
