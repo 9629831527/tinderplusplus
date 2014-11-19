@@ -1,19 +1,25 @@
 var app = angular.module('tinder++', ['ngAutocomplete', 'ngCookies']);
 
-app.factory('API', function GitHub($http) {
+app.factory('API', function GitHub($http, $cookies) {
   $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+  $http.defaults.withCredentials = true;
+  var host = 'https://tinderplus.herokuapp.com/';
+  //var host = '/';
   return {
     login: function(id, token) {
-      $http.post('/login', $.param({fb_id: id, fb_token: token}))
+      $http.post(host + 'login', $.param({fb_id: id, fb_token: token}))
           .success(function(data) {
             console.log(data);
+            $cookies.logged_in = 'true';
+            $cookies.name = data.user.full_name;
+            $cookies.smallPhoto = data.user.photos[0].processedFiles[3].url
           })
           .error(function(data) {
             console.log(data);
           });
     },
     updateLocation: function(lat, lng) {
-      $http.get('/api/location/' + lat + '/' + lng)
+      $http.get(host + 'api/location/' + lat + '/' + lng)
           .success(function(data, status, headers, config) {
             console.log(data);
           })
@@ -22,8 +28,8 @@ app.factory('API', function GitHub($http) {
           });
     },
     people: function(callbackFn) {
-      $http.get('/api/people')
-      //$http.get('/people.json')
+      $http.get(host + 'api/people')
+      //$http.get(host + 'people.json')
           .success(function(data) {
             callbackFn(data.results);
           })
@@ -32,7 +38,7 @@ app.factory('API', function GitHub($http) {
           });
     },
     userInfo: function(userId) {
-      $http.get('/api/user/' + userId)
+      $http.get(host + 'api/user/' + userId)
           .success(function(data) {
             console.log(data);
           })
@@ -41,7 +47,7 @@ app.factory('API', function GitHub($http) {
           });
     },
     like: function(userId) {
-      $http.get('/api/like/' + userId)
+      $http.get(host + 'api/like/' + userId)
           .success(function(data) {
             console.log(data);
             if (data.match) {
@@ -53,7 +59,7 @@ app.factory('API', function GitHub($http) {
           });
     },
     pass: function(userId) {
-      $http.get('/api/pass/' + userId)
+      $http.get(host + 'api/pass/' + userId)
           .success(function(data) {
             console.log(data);
           })
@@ -62,7 +68,7 @@ app.factory('API', function GitHub($http) {
           });
     },
     message: function(userId, message) {
-      $http.post('/api/message/' + userId, $.param({msg: message}))
+      $http.post(host + 'api/message/' + userId, $.param({msg: message}))
           .success(function(data) {
             console.log(data);
           })
