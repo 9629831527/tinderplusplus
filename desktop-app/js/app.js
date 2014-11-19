@@ -232,7 +232,12 @@ app.controller('LoginController', function LoginController($scope, $http, $cooki
   };
 
   $scope.startLogin = function() {
-    var loginWindow = window.open($scope.loginUrl, 'Login to Tinder', false);
+    var w = 1060;
+    var h = 600;
+    var left = (screen.width/2)-(w/2);
+    var top = (screen.height/2)-(h/2);
+    var options = 'width='+w+', height='+h+', top='+top+', left='+left;
+    var loginWindow = window.open($scope.loginUrl, 'Login to Tinder', options);
     var interval = window.setInterval(function() {
       checkForToken(loginWindow, interval);
     }, 500);
