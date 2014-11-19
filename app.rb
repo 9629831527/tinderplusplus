@@ -11,11 +11,6 @@ set :server, 'puma'
 enable :sessions
 set :session_secret, '71384ef55b7b79cb7a8cfcc7921ffd5fd525c850d8648a10ba61250162cfc4fb14e22081c77499b31c2eca84cf7d922974bf1ad5dd91a487de461a6d2aa18744'
 enable :cross_origin
-# set :protection, false
-
-options '/*' do
-  response['Access-Control-Allow-Headers'] = 'origin, x-requested-with, content-type'
-end
 
 before '/api/*' do
   authenticateAndSetup
@@ -32,9 +27,6 @@ post '/login' do
   session[:fb_token] = params[:fb_token]
   session[:fb_id] = params[:fb_id]
   session[:tinder_token] = @pyro.auth_token
-  response.set_cookie('logged_in', {:value => true})
-  response.set_cookie('name', {:value => result['user']['full_name']})
-  response.set_cookie('smallPhoto', {:value => result['user']['photos'][0]['processedFiles'][3]['url']})
   {result: 'ok'}.merge(result).to_json
 end
 
