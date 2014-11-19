@@ -1,5 +1,6 @@
 {
   "name": "TinderPlusPlus",
+  "version": "1.0.0",
   "main": "index.html",
   "window": {
     "toolbar": false,
@@ -10,6 +11,10 @@
     "position": "center",
     "frame": false
   },
+  "webkit": {
+    "page-cache": true
+  },
+  "no-edit-menu": true,
   "devDependencies": {
     "moment": "^2.8.4"
   }
