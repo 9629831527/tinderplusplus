@@ -37,7 +37,7 @@
         <br>
         <a href="/logout">Logout</a>
       </p>
-      <img src="http://images.gotinder.com/542e7b4bb29f65ac70c1fb8f/84x84_b2614253-f943-4dc6-809c-3c8079ccf574.jpg" />
+      <img src="{{getCookie('smallPhoto')}}" />
       <div ng-show="showLocation">
         <input type="text" ng-autocomplete ng-model="autocomplete" options="autocompleteOptions" details="details"
                placeholder="Change Location" id="autocompleteLocation" />
