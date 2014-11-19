@@ -1,6 +1,79 @@
-var app = angular.module('tinder++', ['ngAutocomplete']);
+var app = angular.module('tinder++', ['ngAutocomplete', 'ngCookies']);
 
-app.controller('TinderController', function TinderController($scope, $http, $timeout, $window) {
+app.factory('API', function GitHub($http) {
+  $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+  return {
+    login: function(id, token) {
+      $http.post('/login', $.param({fb_id: id, fb_token: token}))
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    updateLocation: function(lat, lng) {
+      $http.get('/api/location/' + lat + '/' + lng)
+          .success(function(data, status, headers, config) {
+            console.log(data);
+          })
+          .error(function(data, status, headers, config) {
+            alert(data);
+          });
+    },
+    people: function(callbackFn) {
+      $http.get('/api/people')
+      //$http.get('/people.json')
+          .success(function(data) {
+            callbackFn(data.results);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    userInfo: function(userId) {
+      $http.get('/api/user/' + userId)
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    like: function(userId) {
+      $http.get('/api/like/' + userId)
+          .success(function(data) {
+            console.log(data);
+            if (data.match) {
+              alert("it's a match!");
+            }
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    pass: function(userId) {
+      $http.get('/api/pass/' + userId)
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    },
+    message: function(userId, message) {
+      $http.post('/api/message/' + userId, $.param({msg: message}))
+          .success(function(data) {
+            console.log(data);
+          })
+          .error(function(data) {
+            console.log(data);
+          });
+    }
+  };
+});
+
+app.controller('TinderController', function TinderController($scope, $http, $timeout, $window, $cookies, API) {
   $scope.allPeople = [];
   $scope.peopleIndex = 0;
   $scope.showLocation = false;
@@ -14,13 +87,13 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
   };
 
   $scope.getCookie = function(cookieName) {
-    return docCookies.getItem(cookieName);
+    return $cookies[cookieName];
   };
 
   $scope.watchAutocomplete = function () { return $scope.details; };
   $scope.$watch($scope.watchAutocomplete, function (details) {
     if (details) {
-      docCookies.setItem('currentCity', details.name);
+      $cookies.currentCity = details.name;
       API.updateLocation(details.geometry.location.k, details.geometry.location.B);
       $scope.showLocation = false;
       $('#autocompleteLocation').val('');
@@ -30,6 +103,16 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
   $scope.$on('cardsRendered', function() {
     initCards();
   });
+
+  var getPeople = function() {
+    API.people(setPeople);
+  };
+
+  var setPeople = function(people) {
+    $scope.peopleIndex = 0;
+    $scope.allPeople = people;
+    $.map($scope.allPeople, function(person) { person.photoIndex = 0; });
+  };
 
   var initCards = function() {
     $scope.cards = [].slice.call($('.tinder-card'));
@@ -54,7 +137,7 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
       $scope.$apply();
       $(e.target).fadeOut(500);
       if ($scope.peopleIndex >= $scope.allPeople.length) {
-        API.people();
+        getPeople();
       }
     });
 
@@ -126,77 +209,61 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
     }, 0, false);
   };
 
-  var API = {
-    updateLocation: function(lat, lng) {
-    $http.get('/api/location/' + lat + '/' + lng)
-        .success(function(data, status, headers, config) {
-          console.log(data);
-        })
-        .error(function(data, status, headers, config) {
-          alert(data);
-        });
-    },
-    people: function() {
-      $http.get('/api/people')
-      //$http.get('people.json')
-          .success(function(data) {
-            $scope.peopleIndex = 0;
-            $scope.allPeople = data.results;
-            $.map($scope.allPeople, function(person) { person.photoIndex = 0; });
-          })
-          .error(function(data) {
-            console.log(data);
-          })
-    },
-    userInfo: function(userId) {
-      $http.get('/api/user/' + userId)
-          .success(function(data) {
-            console.log(data);
-          })
-          .error(function(data) {
-            console.log(data);
-          });
-    },
-    like: function(userId) {
-      $http.get('/api/like/' + userId)
-          .success(function(data) {
-            console.log(data);
-            if (data.match) {
-              alert("it's a match!");
-            }
-          })
-          .error(function(data) {
-            console.log(data);
-          });
-    },
-    pass: function(userId) {
-      $http.get('/api/pass/' + userId)
-          .success(function(data) {
-            console.log(data);
-          })
-          .error(function(data) {
-            console.log(data);
-          });
-    },
-    message: function(userId, message) {
-      $http.post('/api/message/' + userId, {msg: message})
-          .success(function(data) {
-            console.log(data);
-          })
-          .error(function(data) {
-            console.log(data);
-          });
-    }
-  };
-
-  API.people();
+  API.people(setPeople);
 
 });
 
-app.controller('LoginController', function LoginController($scope, $http) {
+app.controller('LoginController', function LoginController($scope, $http, $cookieStore, API) {
+  $scope.loginUrl = 'https://www.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token';
+
+  $scope.fbAuthData = {};
+
   $scope.hasValidToken = function() {
-    return docCookies.hasItem('logged_in');
+    return !!$cookieStore.get('logged_in');
   };
+
+  $scope.startLogin = function() {
+    var loginWindow = window.open($scope.loginUrl, 'Login to Tinder', false);
+    var interval = window.setInterval(function() {
+      checkForToken(loginWindow, interval);
+    }, 500);
+  };
+
+  var tinderLogin = function() {
+    API.login($scope.fbAuthData['fb_id'], $scope.fbAuthData['access_token'])
+  };
+
+  var checkForToken = function(loginWindow, interval) {
+    if (loginWindow.closed){
+      window.clearInterval(interval);
+    } else {
+      var url = loginWindow.document.URL;
+      var paramString = url.split("#")[1];
+      if (!!paramString) {
+        var allParam = paramString.split("&");
+        for (var i = 0; i < allParam.length; i++) {
+          var param = allParam[i].split("=");
+          $scope.fbAuthData[param[0]] = param[1];
+        }
+        loginWindow.close();
+        window.clearInterval(interval);
+        getFBUserId($scope.fbAuthData['access_token']);
+      }
+    }
+  };
+
+  var getFBUserId = function(token) {
+    var graphUrl = 'https://graph.facebook.com/me?access_token=' + token;
+    $http.get(graphUrl)
+        .success(function(data) {
+          console.log(data);
+          $scope.fbAuthData['fb_id'] = data.id;
+          tinderLogin();
+        })
+        .error(function(data) {
+          console.log(data);
+        });
+  }
 });
 
 app.directive('renderImagesDirective', function() {
@@ -243,67 +310,4 @@ var debounce = function(func, wait, immediate) {
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };
-};
-
-/*\
-|*|
-|*|  :: cookies.js ::
-|*|
-|*|  A complete cookies reader/writer framework with full unicode support.
-|*|
-|*|  Revision #1 - September 4, 2014
-|*|
-|*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
-|*|  https://developer.mozilla.org/User:fusionchess
-|*|
-|*|  This framework is released under the GNU Public License, version 3 or later.
-|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
-|*|
-|*|  Syntaxes:
-|*|
-|*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
-|*|  * docCookies.getItem(name)
-|*|  * docCookies.removeItem(name[, path[, domain]])
-|*|  * docCookies.hasItem(name)
-|*|  * docCookies.keys()
-|*|
-\*/
-var docCookies = {
-  getItem: function (sKey) {
-    if (!sKey) { return null; }
-    return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
-  },
-  setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
-    var sExpires = "";
-    if (vEnd) {
-      switch (vEnd.constructor) {
-        case Number:
-          sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-          break;
-        case String:
-          sExpires = "; expires=" + vEnd;
-          break;
-        case Date:
-          sExpires = "; expires=" + vEnd.toUTCString();
-          break;
-      }
-    }
-    document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
-    return true;
-  },
-  removeItem: function (sKey, sPath, sDomain) {
-    if (!this.hasItem(sKey)) { return false; }
-    document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
-    return true;
-  },
-  hasItem: function (sKey) {
-    if (!sKey) { return false; }
-    return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-  },
-  keys: function () {
-    var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
-    return aKeys;
-  }
 };
