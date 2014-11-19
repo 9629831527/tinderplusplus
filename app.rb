@@ -19,6 +19,7 @@ get '/' do
 end
 
 post '/login' do
+  response['Access-Control-Allow-Origin'] = '*'
   @pyro = TinderPyro::Client.new
   result = @pyro.sign_in(params[:fb_id], params[:fb_token])
 
@@ -32,6 +33,7 @@ post '/login' do
 end
 
 get '/logout' do
+  response['Access-Control-Allow-Origin'] = '*'
   session.clear
   cookies.map{|cookie| response.delete_cookie(cookie[0]) }
   redirect to('/')
@@ -78,4 +80,6 @@ def authenticateAndSetup
   @pyro.auth_token = session[:tinder_token]
 
   content_type :json
+  # TODO: change me to whatever node-webkit is providing
+  response['Access-Control-Allow-Origin'] = '*'
 end
