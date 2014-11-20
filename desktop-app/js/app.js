@@ -223,8 +223,7 @@ app.controller('TinderController', function TinderController($scope, $http, $tim
 });
 
 app.controller('LoginController', function LoginController($scope, $http, $cookieStore, API) {
-  $scope.loginUrl = 'https://www.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token';
-
+  $scope.loginUrl = 'https://m.facebook.com/dialog/oauth?client_id=464891386855067&redirect_uri=https://www.facebook.com/connect/login_success.html&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,user_relationship_details&response_type=token';
   $scope.fbAuthData = {};
 
   $scope.hasValidToken = function() {
@@ -232,8 +231,8 @@ app.controller('LoginController', function LoginController($scope, $http, $cooki
   };
 
   $scope.startLogin = function() {
-    var w = 1060;
-    var h = 600;
+    var w = 400;
+    var h = 550;
     var left = (screen.width/2)-(w/2);
     var top = (screen.height/2)-(h/2);
     var options = 'width='+w+', height='+h+', top='+top+', left='+left;
