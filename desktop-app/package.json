@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "main": "index.html",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "resizable": true,
     "fullscreen": false,
     "width": 600,
     "height": 800,
-    "position": "center",
-    "frame": false
+    "position": "center"
   },
   "webkit": {
     "page-cache": true
