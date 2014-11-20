@@ -12,22 +12,22 @@
   <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css"/>
+  <link rel="stylesheet" href="css/sweet-alert.css"/>
 
-  <!--<script src="js/moment.min.js"></script>-->
   <script>
     var moment = require('moment');
   </script>
   <script src="js/angular.min.js"></script>
-  <script src="js/angular-cookies.min.js"></script>
+  <script src="js/ngAutocomplete.js"></script>
   <script src="js/jquery.min.js"></script>
   <script src="js/mousetrap.min.js"></script>
   <script src="js/googlemaps.js"></script>
   <script src="js/swing.js"></script>
-  <script src="js/ngAutocomplete.js"></script>
+  <script src="js/sweet-alert.min.js"></script>
   <script src="js/app.js"></script>
 </head>
 <body ng-app="tinder++">
-<div class="title-bar"><i class="fa fa-times" onclick="window.close()"></i>Tinder++</div>
+<!--<div class="title-bar"><i class="fa fa-times" onclick="window.close()"></i>Tinder++</div>-->
 <div ng-controller="TinderController">
   <div class="user">
     <div class="right">
@@ -35,7 +35,7 @@
         {{getCookie('name')}}
         <a href="" ng-click="showLocation = !showLocation" >({{getCookie('currentCity') ? getCookie('currentCity') : 'set location'}})</a>
         <br>
-        <a href="/logout">Logout</a>
+        <a href="" ng-click="logout()">Logout</a>
       </p>
       <img src="{{getCookie('smallPhoto')}}" />
       <div ng-show="showLocation">

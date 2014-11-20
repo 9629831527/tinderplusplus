@@ -13,8 +13,10 @@
   "webkit": {
     "page-cache": true
   },
+  "user-agent": "Mozilla/5.0 (Linux; U; en-gb; KFTHWI Build/JDQ39) AppleWebKit/535.19 (KHTML, like Gecko) Silk/3.16 Safari/535.19",
   "no-edit-menu": true,
   "devDependencies": {
-    "moment": "^2.8.4"
+    "moment": "^2.8.4",
+    "tinderjs": "git://github.com/mfkp/tinderjs"
   }
 }

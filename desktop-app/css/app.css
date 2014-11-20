@@ -1,5 +1,8 @@
 * {
     font-family: 'Merriweather', serif;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 h1, h2, h3, h4, h5 {
@@ -53,7 +56,8 @@ html, body {
 
 .user {
     max-width: 500px;
-    margin: 30px auto 0;
+    margin: 10px auto 0;
+    font-family: 'Raleway', sans-serif;
 }
 
 .user img {
