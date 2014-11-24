@@ -23,6 +23,7 @@
   <script src="js/mousetrap.min.js"></script>
   <script src="js/swing.js"></script>
   <script src="js/sweet-alert.min.js"></script>
+  <script src="js/twemoji.min.js"></script>
   <script src="js/app.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
 </head>
@@ -73,7 +74,7 @@
         </div>
       </div>
       <p class="fader bio">
-        <span dd-text-collapse dd-text-collapse-max-length="48" dd-text-collapse-text="{{allPeople[peopleIndex].bio || 'No Bio'}}"></span>
+        <span dd-text-collapse dd-text-collapse-max-length="48" dd-text-collapse-text="{{allPeople[peopleIndex].bio || 'No Bio' | emoji}}"></span>
       </p>
 
       <div class="small-photos fader">

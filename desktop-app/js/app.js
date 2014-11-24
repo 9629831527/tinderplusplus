@@ -390,9 +390,15 @@
     };
   });
 
-  app.filter('bdayToAge', function () {
-    return function (bday) {
+  app.filter('bdayToAge', function() {
+    return function(bday) {
       return moment.duration(moment().diff(moment(bday))).years();
+    };
+  });
+
+  app.filter('emoji', function() {
+    return function(string) {
+      return twemoji.parse(string);
     };
   });
 
@@ -422,10 +428,33 @@
           // get the length from the attributes
           var maxLength = scope.$eval(attrs.ddTextCollapseMaxLength);
 
-          if (text.length > maxLength) {
+          var countedChars = 0;
+          var isInHtmlTag = false;
+          var splitIdx = null;
+          // this is only for not breaking the twemoji links
+          // don't trust it for anything else
+          for (var i = 0; i < text.length; i++) {
+            if (countedChars > maxLength) {
+              splitIdx = i;
+              break;
+            }
+            if (text[i] === '<') {
+              isInHtmlTag = true;
+            }
+            if (text[i] === '>') {
+              isInHtmlTag = false;
+            }
+            if (!isInHtmlTag) {
+              countedChars++;
+            }
+          }
+          console.log(countedChars);
+          console.log(splitIdx);
+
+          if (splitIdx && text.length > splitIdx) {
             // split the text in two parts, the first always showing
-            var firstPart = String(text).substring(0, maxLength);
-            var secondPart = String(text).substring(maxLength, text.length);
+            var firstPart = String(text).substring(0, splitIdx);
+            var secondPart = String(text).substring(splitIdx, text.length);
 
             // create some new html elements to hold the separate info
             var firstSpan = $compile('<span>' + firstPart + '</span>')(scope);

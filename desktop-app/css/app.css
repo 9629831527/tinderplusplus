@@ -132,6 +132,11 @@ a {
     margin: 0 0 15px 0;
 }
 
+.bio img {
+    height: 22px;
+    vertical-align: bottom;
+}
+
 .main-photo-container {
     height: 320px;
     position: relative;
