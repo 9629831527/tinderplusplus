@@ -15,8 +15,14 @@ html, body {
     overflow-x: hidden;
 }
 
+a {
+    color: #db6151;
+    text-decoration: none;
+}
+
 .right {
     float: right;
+    text-align: right;
 }
 
 .left {
@@ -62,6 +68,16 @@ html, body {
 
 .user img {
     width: 40px;
+    position: relative;
+}
+
+.user .right img {
+    top: -9px;
+}
+
+.user .left img {
+    left: 11px;
+    display: block;
 }
 
 .user p {
@@ -70,6 +86,7 @@ html, body {
     top: -10px;
     position: relative;
     text-align: right;
+    margin-right: 5px;
 }
 
 .top-button {

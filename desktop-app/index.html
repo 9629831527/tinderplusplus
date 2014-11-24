@@ -30,9 +30,16 @@
 <!--<div class="title-bar"><i class="fa fa-times" onclick="window.close()"></i>Tinder++</div>-->
 <div ng-controller="TinderController">
   <div class="user">
+    <div class="left" ng-show="apiQueue.length > 0">
+      <a href="" ng-click="undo()">
+        Undo <i class="fa fa-undo"></i>
+        <img src="{{apiQueue[0].user.photos[0].processedFiles[3].url}}" />
+      </a>
+    </div>
     <div class="right">
       <p>
         {{getCookie('name')}}
+        <br>
         <a href="" ng-click="showLocation = !showLocation" >({{getCookie('currentCity') ? getCookie('currentCity') : 'set location'}})</a>
         <br>
         <a href="" ng-click="logout()">Logout</a>

@@ -77,6 +77,7 @@
     $scope.allPeople = [];
     $scope.peopleIndex = 0;
     $scope.showLocation = false;
+    $scope.apiQueue = [];
 
     $scope.autocompleteOptions = {
       types: '(cities)'
@@ -108,7 +109,6 @@
         }
       });
       gui.Window.get().reloadIgnoringCache();
-      //window.location.reload();
     };
 
     $scope.swapPhoto = function(index) {
@@ -132,10 +132,9 @@
     }, true);
 
     $scope.$watch('showLocation', function() {
-      console.log('sup sup');
-      window.setTimeout(function() {
+      $timeout(function() {
         $('#autocompleteLocation').focus();
-      }, 20);
+      }, 0, false);
     });
 
     $scope.$on('cardsRendered', function() {
@@ -143,6 +142,7 @@
     });
 
     var getPeople = function() {
+      flushApiQueue();
       API.people(setPeople);
     };
 
@@ -153,6 +153,37 @@
         $.map($scope.allPeople, function(person) { person.photoIndex = 0; });
         $scope.$apply();
       }
+    };
+
+    var addToApiQueue = function(data) {
+      if ($scope.apiQueue.length > 0) {
+        var oldData = $scope.apiQueue.shift();
+        if (oldData && oldData.user) {
+          API[oldData.method](oldData.user._id);
+        }
+      }
+      $scope.apiQueue.push(data);
+      $scope.$apply();
+    };
+
+    var flushApiQueue = function() {
+      while ($scope.apiQueue.length > 0) {
+        var oldData = $scope.apiQueue.shift();
+        if (oldData && oldData.user) {
+          API[oldData.method](oldData.user._id);
+        }
+      }
+      $scope.$apply();
+    };
+
+    $scope.undo = function() {
+      $scope.apiQueue.pop();
+      $scope.peopleIndex--;
+      var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
+      $(cardEl).fadeIn(250, function() {
+        var card = window.stack.getCard(cardEl);
+        card.throwIn(0, 0);
+      });
     };
 
     var initCards = function() {
@@ -167,13 +198,15 @@
       window.stack = gajus.Swing.Stack(config);
 
       $scope.cards.forEach(function (targetElement) {
-        stack.createCard(targetElement);
+        window.stack.createCard(targetElement);
       });
 
-      stack.on('throwout', function (e) {
-        var userId = $scope.allPeople[$scope.peopleIndex]._id;
-        // TODO: add to queue instead of liking/passing immediately
-        (e.throwDirection < 0) ? API.pass(userId) : API.like(userId);
+      window.stack.on('throwout', function (e) {
+        var user = $scope.allPeople[$scope.peopleIndex];
+        addToApiQueue({
+          method: (e.throwDirection < 0) ? 'pass' : 'like',
+          user: user
+        });
         $scope.peopleIndex++;
         $scope.$apply();
         $(e.target).fadeOut(500);
@@ -182,7 +215,7 @@
         }
       });
 
-      stack.on('throwin', function (e) {
+      window.stack.on('throwin', function (e) {
         $('.pass-overlay, .like-overlay').css('opacity', 0);
       });
 
@@ -191,7 +224,7 @@
           $faderEls.css('opacity', opacity);
       }, 10);
 
-      stack.on('dragmove', function (obj) {
+      window.stack.on('dragmove', function (obj) {
         obj.origEvent.srcEvent.preventDefault();
         if (!$passOverlay || !$likeOverlay) {
           $passOverlay = $(obj.target).children('.pass-overlay');
@@ -213,7 +246,7 @@
         }
       });
 
-      stack.on('dragend', function(e) {
+      window.stack.on('dragend', function(e) {
         $passOverlay = $likeOverlay = null;
         if ($faderEls) {
           $faderEls.fadeTo(600, 1);
@@ -223,7 +256,7 @@
 
       Mousetrap.bind('left', function () {
         var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
-        var card = stack.getCard(cardEl);
+        var card = window.stack.getCard(cardEl);
         card.throwOut(-100, -50);
         $passOverlay = $(cardEl).children('.pass-overlay');
         $likeOverlay = $(cardEl).children('.like-overlay');
@@ -232,11 +265,15 @@
 
       Mousetrap.bind('right', function () {
         var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
-        var card = stack.getCard(cardEl);
+        var card = window.stack.getCard(cardEl);
         card.throwOut(100, -50);
         $passOverlay = $(cardEl).children('.pass-overlay');
         $likeOverlay = $(cardEl).children('.like-overlay');
         like(1);
+      });
+
+      Mousetrap.bind('backspace', function() {
+        $scope.undo();
       });
 
       // randomize rotation
