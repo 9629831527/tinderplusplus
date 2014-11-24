@@ -144,7 +144,7 @@
       } else {
         swal({
           title: 'Warning',
-          text: 'If you change location too much, you might lose access to Tinder for a few hours.',
+          text: 'If you change location too much, you might lose access to swiping for a few hours.',
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: "#F8C086",
@@ -159,10 +159,6 @@
         });
       }
     };
-
-    $scope.$watch('showLocation', function() {
-
-    });
 
     $scope.$on('cardsRendered', function() {
       initCards();
