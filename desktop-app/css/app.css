@@ -226,7 +226,6 @@ a {
     background-position-y: -144px;
 }
 
-
 /* facebook login */
 .fb-login {
     color: #404040;
@@ -237,7 +236,18 @@ a {
     height: 100%;
     z-index: 10000;
     background-color: #4D4D4D;
-    padding-top: 100px;
+    text-align: center;
+}
+
+.login-container {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.login-container .icon {
+    padding-bottom: 30px;
 }
 
 .collapse-text-toggle {

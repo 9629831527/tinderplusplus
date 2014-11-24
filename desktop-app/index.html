@@ -87,7 +87,10 @@
   </div>
 </div>
 <div ng-controller="LoginController" ng-show="!hasValidToken()" class="fb-login">
-  <a id="sign_in" href="" ng-click="startLogin()"></a>
+  <div class="login-container">
+    <img src="img/icon.png" alt="Tinder++" class="icon" />
+    <a id="sign_in" href="" ng-click="startLogin()"></a>
+  </div>
 </div>
 </body>
 </html>
