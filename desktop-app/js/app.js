@@ -29,8 +29,8 @@
         window.location.reload();
       });
     };
-    apiObj.updateLocation = function(lat, lng, callback) {
-      client.updatePosition(lat, lng, function(err, res, data) {
+    apiObj.updateLocation = function(lng, lat, callback) {
+      client.updatePosition(lng, lat, function(err, res, data) {
         console.log(res);
         callback();
       });
@@ -139,15 +139,15 @@
     $scope.$watch($scope.watchAutocomplete, function (details) {
       if (details) {
         localStorage.currentCity = details.name;
-        API.updateLocation(details.geometry.location.k, details.geometry.location.B, function() {
+        API.updateLocation(details.geometry.location.B, details.geometry.location.k, function() {
           getPeople();
         });
         $scope.showLocation = false;
-        $('#autocompleteLocation').val('');
       }
     }, true);
 
     $scope.toggleLocation = function() {
+      $('#autocompleteLocation').val('');
       if ($scope.showLocation) {
         $scope.showLocation = false;
       } else {
