@@ -9,68 +9,74 @@
   if (localStorage.tinderToken) { client.setAuthToken(localStorage.tinderToken); }
 
   app.factory('API', function API() {
-    return {
-      login: function(id, token) {
-        client.authorize(token, id, function(err, res, data) {
-          console.log(res);
-          localStorage.tinderToken = client.getAuthToken();
-          localStorage.name = res.user.full_name;
-          localStorage.smallPhoto = res.user.photos[0].processedFiles[3].url;
-          window.loginWindow.close(true);
-          window.location.reload();
-        });
-      },
-      updateLocation: function(lat, lng, callback) {
-        client.updatePosition(lat, lng, function(err, res, data) {
-          console.log(res);
-          callback();
-        });
-      },
-      people: function(callbackFn, limit) {
-        limit = limit || 10;
-        client.getRecommendations(limit, function(err, res, data) {
-          if (res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
-            swal({
-              title: 'Out of people for now',
-              text: 'Try quitting, opening phone app, then re-opening this app to fix the problem.',
-              type: 'error',
-              confirmButtonColor: "#DD6B55",
-              confirmButtonText: 'Got it'
-            });
-          } else {
-            callbackFn(res.results);
-          }
-        });
-      },
-      userInfo: function(userId) {
-        client.getUser(userId, function(err, res, data) {
-          console.log(res);
-        });
-      },
-      like: function(userId) {
-        client.like(userId, function(err, res, data) {
-          console.log(res);
-          if (res && res.match) {
+    var apiObj = {};
+
+    apiObj.login = function(id, token) {
+      client.authorize(token, id, function(err, res, data) {
+        console.log(res);
+        localStorage.tinderToken = client.getAuthToken();
+        localStorage.name = res.user.full_name;
+        localStorage.smallPhoto = res.user.photos[0].processedFiles[3].url;
+        window.loginWindow.close(true);
+        window.location.reload();
+      });
+    };
+    apiObj.updateLocation = function(lat, lng, callback) {
+      client.updatePosition(lat, lng, function(err, res, data) {
+        console.log(res);
+        callback();
+      });
+    };
+    apiObj.people = function(callbackFn, limit) {
+      limit = limit || 10;
+      client.getRecommendations(limit, function(err, res, data) {
+        if (res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
+          swal({
+            title: 'Out of people for now',
+            text: 'Try quitting, opening phone app, then re-opening this app to fix the problem.',
+            type: 'error',
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: 'Got it'
+          });
+        } else {
+          callbackFn(res.results);
+        }
+      });
+    };
+    apiObj.userInfo = function(userId, callbackFn) {
+      client.getUser(userId, function(err, res, data) {
+        console.log(res);
+        callbackFn(err, res, data);
+      });
+    };
+    apiObj.like = function(userId) {
+      client.like(userId, function(err, res, data) {
+        console.log(res);
+        if (res && res.match) {
+          apiObj.userInfo(res.match.participants[1], function(err2, res2, data2) {
+            var user = res2.results;
             swal({
               title: 'It\'s a match!',
-              text: 'Go send a message (on your phone for now)',
-              type: 'success',
-              confirmButtonText: 'Nice'
+              text: 'Go send a message to ' + user.name + ' (on your phone for now)',
+              confirmButtonText: 'Nice!',
+              imageUrl: user.photos[0].processedFiles[3].url
             });
-          }
-        });
-      },
-      pass: function(userId) {
-        client.pass(userId, function(err, res, data) {
-          console.log(res);
-        });
-      },
-      message: function(userId, message) {
-        client.sendMessage(userId, message, function(err, res, data) {
-          console.log(res);
-        });
-      }
+          });
+        }
+      });
     };
+    apiObj.pass = function(userId) {
+      client.pass(userId, function(err, res, data) {
+        console.log(res);
+      });
+    };
+    apiObj.message = function(userId, message) {
+      client.sendMessage(userId, message, function(err, res, data) {
+        console.log(res);
+      });
+    };
+
+    return apiObj;
   });
 
   app.controller('TinderController', function TinderController($scope, $http, $timeout, $window, API) {
