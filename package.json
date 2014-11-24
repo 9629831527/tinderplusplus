@@ -1,0 +1,22 @@
+{
+  "name": "tinderplusplus",
+  "version": "1.0.0",
+  "description": "tinder",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mfkp/tinderplusplus.git"
+  },
+  "author": "@mfkp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mfkp/tinderplusplus/issues"
+  },
+  "homepage": "https://github.com/mfkp/tinderplusplus",
+  "devDependencies": {
+    "node-webkit-builder": "^0.3.0"
+  }
+}

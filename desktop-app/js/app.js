@@ -1,9 +1,17 @@
 (function() {
   // resize to window to full screen height
-  window.resizeTo(window.innerWidth, window.screen.availHeight);
+  var resizeToHeight = Math.min(820, window.screen.availHeight);
+  window.resizeTo(window.innerWidth, resizeToHeight);
+
+  var gui = require('nw.gui');
+  var win = gui.Window.get();
+  var nativeMenuBar = new gui.Menu({ type: 'menubar' });
+  nativeMenuBar.createMacBuiltin('Tinder⁺⁺', {
+    hideEdit: true
+  });
+  win.menu = nativeMenuBar;
 
   var app = angular.module('tinder++', ['ngAutocomplete']);
-  var gui = require('nw.gui');
   var tinder = require('tinderjs');
   var client = new tinder.TinderClient();
   if (localStorage.tinderToken) { client.setAuthToken(localStorage.tinderToken); }
