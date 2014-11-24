@@ -40,7 +40,7 @@
       <p>
         {{getCookie('name')}}
         <br>
-        <a href="" ng-click="showLocation = !showLocation" >({{getCookie('currentCity') ? getCookie('currentCity') : 'set location'}})</a>
+        <a href="" ng-click="toggleLocation()" >({{getCookie('currentCity') ? getCookie('currentCity') : 'set location'}})</a>
         <br>
         <a href="" ng-click="logout()">Logout</a>
       </p>

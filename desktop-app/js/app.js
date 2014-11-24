@@ -33,7 +33,8 @@
         if (res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
           swal({
             title: 'Out of people for now',
-            text: 'Try quitting, opening phone app, then re-opening this app to fix the problem.',
+            text: 'This can happen if you change location too much. Try quitting, opening phone app, ' +
+            'then re-opening this app to fix the problem, otherwise just wait an hour or so.',
             type: 'error',
             confirmButtonColor: "#DD6B55",
             confirmButtonText: 'Got it'
@@ -137,10 +138,30 @@
       }
     }, true);
 
+    $scope.toggleLocation = function() {
+      if ($scope.showLocation) {
+        $scope.showLocation = false;
+      } else {
+        swal({
+          title: 'Warning',
+          text: 'If you change location too much, you might lose access to Tinder for a few hours.',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: "#F8C086",
+          confirmButtonText: 'Got it',
+          closeOnConfirm: true
+        }, function() {
+          $scope.showLocation = true;
+          $scope.$apply();
+          $timeout(function() {
+            $('#autocompleteLocation').focus();
+          }, 0, false);
+        });
+      }
+    };
+
     $scope.$watch('showLocation', function() {
-      $timeout(function() {
-        $('#autocompleteLocation').focus();
-      }, 0, false);
+
     });
 
     $scope.$on('cardsRendered', function() {
