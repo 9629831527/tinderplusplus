@@ -93,6 +93,7 @@
     $scope.peopleIndex = 0;
     $scope.showLocation = false;
     $scope.apiQueue = [];
+    var queueTimer = null;
 
     $scope.autocompleteOptions = {
       types: '(cities)'
@@ -187,6 +188,9 @@
     };
 
     var addToApiQueue = function(data) {
+      if (queueTimer) {
+        $timeout.cancel(queueTimer);
+      }
       if ($scope.apiQueue.length > 0) {
         var oldData = $scope.apiQueue.shift();
         if (oldData && oldData.user) {
@@ -195,6 +199,9 @@
       }
       $scope.apiQueue.push(data);
       $scope.$apply();
+      queueTimer = $timeout(function() {
+        flushApiQueue();
+      }, 10000, false);
     };
 
     var flushApiQueue = function() {
