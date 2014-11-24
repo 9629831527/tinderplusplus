@@ -1,4 +1,7 @@
 (function() {
+  // resize to window to full screen height
+  window.resizeTo(window.innerWidth, window.screen.availHeight);
+
   var app = angular.module('tinder++', ['ngAutocomplete']);
   var gui = require('nw.gui');
   var tinder = require('tinderjs');
@@ -13,6 +16,7 @@
           localStorage.tinderToken = client.getAuthToken();
           localStorage.name = res.user.full_name;
           localStorage.smallPhoto = res.user.photos[0].processedFiles[3].url;
+          window.loginWindow.close(true);
           window.location.reload();
         });
       },
@@ -25,10 +29,10 @@
       people: function(callbackFn, limit) {
         limit = limit || 10;
         client.getRecommendations(limit, function(err, res, data) {
-          if (res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
+          if (res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
             swal({
-              title: 'Sorry',
-              text: 'Out of people for now - check back later!',
+              title: 'Out of people for now',
+              text: 'Try quitting, opening phone app, then re-opening this app to fix the problem.',
               type: 'error',
               confirmButtonColor: "#DD6B55",
               confirmButtonText: 'Got it'
@@ -46,7 +50,7 @@
       like: function(userId) {
         client.like(userId, function(err, res, data) {
           console.log(res);
-          if (res.match) {
+          if (res && res.match) {
             swal({
               title: 'It\'s a match!',
               text: 'Go send a message (on your phone for now)',
@@ -126,6 +130,13 @@
         $('#autocompleteLocation').val('');
       }
     }, true);
+
+    $scope.$watch('showLocation', function() {
+      console.log('sup sup');
+      window.setTimeout(function() {
+        $('#autocompleteLocation').focus();
+      }, 20);
+    });
 
     $scope.$on('cardsRendered', function() {
       initCards();
@@ -252,17 +263,17 @@
     };
 
     $scope.startLogin = function() {
-      var loginWindow = gui.Window.open($scope.loginUrl, {
+      window.loginWindow = gui.Window.open($scope.loginUrl, {
         position: 'center',
         width: 400,
         height: 480
       });
       var interval = window.setInterval(function() {
-        checkForToken(loginWindow.window, interval);
+        checkForToken(window.loginWindow.window, interval);
       }, 500);
-      loginWindow.on('closed', function() {
+      window.loginWindow.on('closed', function() {
         window.clearInterval(interval);
-        loginWindow = null;
+        window.loginWindow = null;
       });
     };
 
@@ -271,7 +282,7 @@
     };
 
     var checkForToken = function(loginWindow, interval) {
-      if (loginWindow.closed){
+      if (loginWindow.closed) {
         window.clearInterval(interval);
       } else {
         var url = loginWindow.document.URL;
@@ -316,6 +327,61 @@
       return moment.duration(moment().diff(moment(bday))).years();
     };
   });
+
+  // based off https://github.com/doukasd/AngularJS-Components
+  // a directive to auto-collapse long text
+  // in elements with the "dd-text-collapse" attribute
+  app.directive('ddTextCollapse', ['$compile', function($compile) {
+
+    return {
+      restrict: 'A',
+      scope: true,
+      link: function(scope, element, attrs) {
+
+        // start collapsed
+        scope.collapsed = false;
+
+        // create the function to toggle the collapse
+        scope.toggle = function() {
+          scope.collapsed = !scope.collapsed;
+        };
+
+        // wait for changes on the text
+        attrs.$observe('ddTextCollapseText', function(text) {
+
+          scope.collapsed = false;
+
+          // get the length from the attributes
+          var maxLength = scope.$eval(attrs.ddTextCollapseMaxLength);
+
+          if (text.length > maxLength) {
+            // split the text in two parts, the first always showing
+            var firstPart = String(text).substring(0, maxLength);
+            var secondPart = String(text).substring(maxLength, text.length);
+
+            // create some new html elements to hold the separate info
+            var firstSpan = $compile('<span>' + firstPart + '</span>')(scope);
+            var secondSpan = $compile('<span ng-if="collapsed">' + secondPart + '</span>')(scope);
+            var moreIndicatorSpan = $compile('<span ng-if="!collapsed">&#8230; </span>')(scope);
+            var lineBreak = $compile('<br ng-if="collapsed">')(scope);
+            var toggleButton = $compile('<span class="collapse-text-toggle" ng-click="toggle()">{{collapsed ? "less" : "more"}}</span>')(scope);
+
+            // remove the current contents of the element
+            // and add the new ones we created
+            element.empty();
+            element.append(firstSpan);
+            element.append(secondSpan);
+            element.append(moreIndicatorSpan);
+            element.append(lineBreak);
+            element.append(toggleButton);
+          } else {
+            element.empty();
+            element.append(text);
+          }
+        });
+      }
+    };
+  }]);
 
   var $passOverlay, $likeOverlay;
 

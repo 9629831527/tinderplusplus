@@ -21,10 +21,10 @@
   <script src="js/ngAutocomplete.js"></script>
   <script src="js/jquery.min.js"></script>
   <script src="js/mousetrap.min.js"></script>
-  <script src="js/googlemaps.js"></script>
   <script src="js/swing.js"></script>
   <script src="js/sweet-alert.min.js"></script>
   <script src="js/app.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
 </head>
 <body ng-app="tinder++">
 <!--<div class="title-bar"><i class="fa fa-times" onclick="window.close()"></i>Tinder++</div>-->
@@ -51,8 +51,8 @@
   <div class="container">
     <div ng-show="allPeople.length === 0 || peopleIndex >= allPeople.length">Loading...</div>
     <div ng-show="allPeople.length > 0 && peopleIndex < allPeople.length">
-      <h1 class="fader">{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}</h1>
-      <h3 class="fader">{{allPeople[peopleIndex].distance_mi}} miles {{getCookie('currentCity') ? "from " + getCookie('currentCity') : 'away'}}</h3>
+      <h1 class="fader" style="display: inline;">{{allPeople[peopleIndex].name}}, {{allPeople[peopleIndex].birth_date | bdayToAge}}&nbsp;</h1>
+      <h3 class="fader" style="display: inline;">({{allPeople[peopleIndex].distance_mi}} miles {{getCookie('currentCity') ? "from " + getCookie('currentCity') : 'away'}})</h3>
 
       <div class="main-photo-container">
         <div class="main-photo tinder-card" ng-repeat="user in allPeople.slice().reverse()" render-images-directive
@@ -65,7 +65,10 @@
           </div>
         </div>
       </div>
-      <p class="fader bio">{{allPeople[peopleIndex].bio || 'No Bio'}}</p>
+      <p class="fader bio">
+        <span dd-text-collapse dd-text-collapse-max-length="48" dd-text-collapse-text="{{allPeople[peopleIndex].bio || 'No Bio'}}"></span>
+      </p>
+
       <div class="small-photos fader">
         <div ng-repeat="photo in allPeople[peopleIndex].photos">
           <img ng-src="{{photo.processedFiles[2].url}}" ng-click="swapPhoto($index)" data-photo-index="{{$index}}"

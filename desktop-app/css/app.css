@@ -118,6 +118,7 @@ html, body {
 .main-photo-container {
     height: 320px;
     position: relative;
+    margin-top: 20px;
 }
 
 .main-photo {
@@ -170,7 +171,9 @@ html, body {
 }
 
 .small-photos img {
-    max-width: 150px;
+    width: 120px;
+    height: 120px;
+    /*max-width: 120px;*/
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
@@ -213,4 +216,19 @@ html, body {
     z-index: 10000;
     background-color: #4D4D4D;
     padding-top: 100px;
+}
+
+.collapse-text-toggle {
+    font-size: 0.9em;
+    color: #666666;
+    cursor: pointer;
+}
+.collapse-text-toggle:hover {
+    color: #222222;
+}
+.collapse-text-toggle:before {
+    content: '\00a0(';
+}
+.collapse-text-toggle:after {
+    content: ')';
 }
