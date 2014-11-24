@@ -448,8 +448,6 @@
               countedChars++;
             }
           }
-          console.log(countedChars);
-          console.log(splitIdx);
 
           if (splitIdx && text.length > splitIdx) {
             // split the text in two parts, the first always showing
