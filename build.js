@@ -1,11 +1,12 @@
 var NwBuilder = require('node-webkit-builder');
 var nw = new NwBuilder({
   files: 'desktop-app/**',
-  platforms: ['osx', 'win'],
-  version: '0.10.5',
+  platforms: ['osx', 'win', 'linux32', 'linux64'],
+  version: '0.11.2',
   appName: 'Tinder⁺⁺',
+  buildType: 'timestamped',
   appVersion: '1.0.0',
-  //winIco: 'icons/win.ico',
+  winIco: 'icons/win.ico',
   macIcns: 'icons/mac.icns'
 });
 
