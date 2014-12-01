@@ -25,7 +25,9 @@
         localStorage.tinderToken = client.getAuthToken();
         localStorage.name = res.user.full_name;
         localStorage.smallPhoto = res.user.photos[0].processedFiles[3].url;
-        window.loginWindow.close(true);
+        if (window.loginWindow) {
+          window.loginWindow.close(true);
+        }
         window.location.reload();
       });
     };
