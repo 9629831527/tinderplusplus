@@ -344,6 +344,7 @@
 
     $scope.startLogin = function() {
       window.loginWindow = gui.Window.open($scope.loginUrl, {
+        title: 'Login to Facebook',
         position: 'center',
         width: 400,
         height: 480,

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.html",
   "window": {
+    "title": "Tinder⁺⁺",
     "toolbar": false,
     "resizable": true,
     "fullscreen": false,
