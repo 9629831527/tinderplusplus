@@ -23,6 +23,7 @@
     var apiObj = {};
 
     apiObj.login = function(id, token) {
+      ga_storage._trackEvent('Login', 'Facebook Login Successful');
       client.authorize(token, id, function(err, res, data) {
         console.log(res);
         localStorage.tinderToken = client.getAuthToken();
@@ -145,6 +146,7 @@
       if (details) {
         localStorage.currentCity = details.name;
         API.updateLocation(details.geometry.location.B, details.geometry.location.k, function() {
+          ga_storage._trackEvent('Location', 'Location Updated');
           getPeople();
         });
         $scope.showLocation = false;
@@ -156,6 +158,7 @@
       if ($scope.showLocation) {
         $scope.showLocation = false;
       } else {
+        ga_storage._trackEvent('Location', 'Clicked Change Location');
         swal({
           title: 'Warning',
           text: 'If you change location too much, you might lose access to swiping for a few hours.',
@@ -181,6 +184,7 @@
     var getPeople = function() {
       flushApiQueue();
       API.people(setPeople);
+      ga_storage._trackEvent('People', 'Loading more people');
     };
 
     var setPeople = function(people) {
@@ -227,7 +231,10 @@
         var card = window.stack.getCard(cardEl);
         card.throwIn(0, 0);
       });
+      ga_storage._trackEvent('Undo', 'Clicked Undo');
     };
+
+    var firstLoad = true;
 
     var initCards = function() {
       $scope.cards = [].slice.call($('.tinder-card'));
@@ -256,6 +263,7 @@
         if ($scope.peopleIndex >= $scope.allPeople.length) {
           getPeople();
         }
+        ga_storage._trackEvent('Swipe', (e.throwDirection < 0) ? 'pass' : 'like');
       });
 
       window.stack.on('throwin', function (e) {
@@ -297,27 +305,35 @@
         }
       });
 
-      Mousetrap.bind('left', function () {
-        var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
-        var card = window.stack.getCard(cardEl);
-        card.throwOut(-100, -50);
-        $passOverlay = $(cardEl).children('.pass-overlay');
-        $likeOverlay = $(cardEl).children('.like-overlay');
-        pass(1);
-      });
+      if (firstLoad) {
+        console.log('running firstload');
+        firstLoad = false;
 
-      Mousetrap.bind('right', function () {
-        var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
-        var card = window.stack.getCard(cardEl);
-        card.throwOut(100, -50);
-        $passOverlay = $(cardEl).children('.pass-overlay');
-        $likeOverlay = $(cardEl).children('.like-overlay');
-        like(1);
-      });
+        Mousetrap.bind('left', function () {
+          var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
+          var card = window.stack.getCard(cardEl);
+          card.throwOut(-100, -50);
+          $passOverlay = $(cardEl).children('.pass-overlay');
+          $likeOverlay = $(cardEl).children('.like-overlay');
+          pass(1);
+          ga_storage._trackEvent('Keyboard', 'left');
+        });
 
-      Mousetrap.bind('backspace', function() {
-        $scope.undo();
-      });
+        Mousetrap.bind('right', function () {
+          var cardEl = $scope.cards[$scope.cards.length - $scope.peopleIndex - 1];
+          var card = window.stack.getCard(cardEl);
+          card.throwOut(100, -50);
+          $passOverlay = $(cardEl).children('.pass-overlay');
+          $likeOverlay = $(cardEl).children('.like-overlay');
+          like(1);
+          ga_storage._trackEvent('Keyboard', 'right');
+        });
+
+        Mousetrap.bind('backspace', function() {
+          $scope.undo();
+          ga_storage._trackEvent('Keyboard', 'backspace');
+        });
+      }
 
       // randomize rotation
       $timeout(function() {
@@ -359,6 +375,7 @@
         window.clearInterval(interval);
         window.loginWindow = null;
       });
+      ga_storage._trackEvent('Login', 'Login Started');
     };
 
     var tinderLogin = function() {

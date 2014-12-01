@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>Tinder⁺⁺</title>
-  <meta name="description" content="Web optimized Tinder, plus all the features of Tinder Plus for free!">
+  <meta name="description" content="Desktop optimized Tinder, plus all the features of Tinder Plus for free!">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"/>
   <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
@@ -16,6 +16,11 @@
 
   <script>
     var moment = require('moment');
+  </script>
+  <script type="text/javascript" src="js/ga-localstorage.js"></script>
+  <script>
+    ga_storage._setAccount('UA-57228925-3');
+    ga_storage._trackPageview('/index.html');
   </script>
   <script src="js/angular.min.js"></script>
   <script src="js/ngAutocomplete.js"></script>
@@ -92,5 +97,20 @@
     <a id="sign_in" href="" ng-click="startLogin()"></a>
   </div>
 </div>
+
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '547c3b42eddd5b206b009d37');
+    t.src = 'https://secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+
 </body>
 </html>
