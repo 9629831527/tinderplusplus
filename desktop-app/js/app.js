@@ -5,11 +5,14 @@
 
   var gui = require('nw.gui');
   var win = gui.Window.get();
-  var nativeMenuBar = new gui.Menu({ type: 'menubar' });
-  nativeMenuBar.createMacBuiltin('Tinder⁺⁺', {
-    hideEdit: true
-  });
-  win.menu = nativeMenuBar;
+
+  if (process.platform === 'darwin') {
+    var nativeMenuBar = new gui.Menu({ type: 'menubar' });
+    nativeMenuBar.createMacBuiltin('Tinder⁺⁺', {
+      hideEdit: true
+    });
+    win.menu = nativeMenuBar;
+  }
 
   var app = angular.module('tinder++', ['ngAutocomplete']);
   var tinder = require('tinderjs');
@@ -343,10 +346,13 @@
       window.loginWindow = gui.Window.open($scope.loginUrl, {
         position: 'center',
         width: 400,
-        height: 480
+        height: 480,
+        focus: true
       });
       var interval = window.setInterval(function() {
-        checkForToken(window.loginWindow.window, interval);
+        if (window.loginWindow) {
+          checkForToken(window.loginWindow.window, interval);
+        }
       }, 500);
       window.loginWindow.on('closed', function() {
         window.clearInterval(interval);
