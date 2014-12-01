@@ -143,6 +143,10 @@ a {
     margin-top: 20px;
 }
 
+.main-photo-container img {
+    max-width: 400px;
+}
+
 .main-photo {
     text-align: center;
     width: 300px;
@@ -183,8 +187,9 @@ a {
     line-height: 200%;
 }
 
-.main-photo-container img {
-    max-width: 400px;
+.main-photo .like-overlay:hover,
+.main-photo .pass-overlay:hover{
+    cursor: -webkit-grab;
 }
 
 .small-photos div {
