@@ -15,6 +15,8 @@ zip -r tinder.nw *
 /path/to/your/node-webkit tinder.nw
 ```
 
+Note: if you don't have Wine installed and want to run the build script (`node build.js`), just delete the `winIco` field from build.js
+
 ### ISC License ###
 
 Copyright (c) 2014, VibraMedia, LLC
