@@ -44,7 +44,7 @@
     apiObj.people = function(callbackFn, limit) {
       limit = limit || 10;
       client.getRecommendations(limit, function(err, res, data) {
-        if (res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) {
+        if ((res && res.message && (res.message === 'recs timeout' || res.message === 'recs exhausted')) || !res) {
           swal({
             title: 'Out of people for now',
             text: 'This can happen if you change location too much. Try quitting, opening phone app, ' +
