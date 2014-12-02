@@ -145,7 +145,10 @@
     $scope.$watch($scope.watchAutocomplete, function (details) {
       if (details) {
         localStorage.currentCity = details.name;
-        API.updateLocation(details.geometry.location.B, details.geometry.location.k, function() {
+        var fuzzAmount = +(Math.random() * (0.00000009 - 0.00000001) + 0.00000001).toFixed(8);
+        var lng = parseFloat(details.geometry.location.B) + fuzzAmount;
+        var lat = parseFloat(details.geometry.location.k) + fuzzAmount;
+        API.updateLocation(lng.toString(), lat.toString(), function() {
           ga_storage._trackEvent('Location', 'Location Updated');
           getPeople();
         });
