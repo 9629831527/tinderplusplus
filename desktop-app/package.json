@@ -1,9 +1,9 @@
 {
-  "name": "Tinder⁺⁺",
+  "name": "TinderPlusPlus",
   "version": "1.0.0",
   "main": "index.html",
   "window": {
-    "title": "Tinder⁺⁺",
+    "title": "TinderPlusPlus",
     "toolbar": false,
     "resizable": true,
     "fullscreen": false,
